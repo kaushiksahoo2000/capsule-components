@@ -15,7 +15,7 @@ class SwipeCard extends Component {
         transition: 'transform 100ms'
       }
     }
-    // this.boundMouseUpHandler = this.mouseUpHandler.bind(this)
+    this.boundMouseUpHandler = this.mouseUpHandler.bind(this)
     this.boundMouseMoveHandler = this.mouseMoveHandler.bind(this)
   }
 
@@ -46,6 +46,19 @@ class SwipeCard extends Component {
       this.addHandlers()
     }
 
+  mouseUpHandler(e){
+    console.log("inside mouse up")
+    this.setState({
+      cardStyle: {
+        top: 0,
+        left: 0,
+        transform: 'rotate(0deg)',
+        transition: 'transform '+ this.props.snap || 500 +'ms'
+      }
+    })
+    this.removeHandlers()
+  }
+
   mouseMoveHandler(e){
     let x1 = this.state.prevPos.x
     let y1 = this.state.prevPos.y
@@ -65,7 +78,7 @@ class SwipeCard extends Component {
         top: y2 - y1,
         left: x2 - x1,
         transform: 'rotate(' + angle + 'deg)',
-        transition: 'transform 100ms'
+        transition: 'transform '+ this.props.smooth || 100 +'ms'
       }
     })
   }
@@ -74,13 +87,14 @@ class SwipeCard extends Component {
     return (
       <div>
             <div style={{borderWidth: 3,
-                        borderRadius: 3,
-                        borderStyle: 'solid',
-                        borderColor: '#000',
-                        position: 'absolute',
-                        width: '200px',
-                        height: '300px',
-                        position: 'absolute', ...this.state.cardStyle}} onMouseDownCapture={this.mouseDownHandler.bind(this)}>
+              borderRadius: 3,
+              borderStyle: 'solid',
+              borderColor: '#000',
+              position: 'absolute',
+              width: '200px',
+              height: '300px',
+              position: 'absolute', ...this.state.cardStyle}} onMouseDownCapture={this.mouseDownHandler.bind(this)}
+              onTouchStartCapture={this.mouseDownHandler.bind(this)}>
             Text in card
             </div>
       </div>
