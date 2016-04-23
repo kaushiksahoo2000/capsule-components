@@ -6,8 +6,11 @@ class SwipeCard extends Component {
   constructor() {
     super()
     this.state = {
+      trigger: false,
       prevPos: {x: 0, y: 0},
       currPos: {x: 0, y: 0},
+      boundary: null,
+      zone: null,
       cardStyle: {
         top: 0,
         left: 0,
@@ -37,7 +40,9 @@ class SwipeCard extends Component {
 
   mouseDownHandler(e){
     if(e) this.stop(e)
+    console.log(e.currentTarget.getBoundingClientRect());
       this.setState({
+        boundary: e.currentTarget.getBoundingClientRect(),
         prevPos: {
           y: e.touches !== undefined ? e.touches[0].clientY : e.clientY,
           x: e.touches !== undefined ? e.touches[0].clientX : e.clientX
@@ -48,6 +53,10 @@ class SwipeCard extends Component {
 
   mouseUpHandler(e){
     console.log("inside mouse up")
+    if(this.state.trigger){
+      if(this.props.onLeft && this.state.zone[1] === 'left') this.props.onLeft()
+      if(this.props.onRight && this.state.zone[1] === 'right') this.props.onRight()
+    }
     this.setState({
       cardStyle: {
         top: 0,
@@ -64,7 +73,13 @@ class SwipeCard extends Component {
     let y1 = this.state.prevPos.y
     let x2 = e.touches !== undefined ? e.touches[0].clientX : e.clientX
     let y2 = e.touches !== undefined ? e.touches[0].clientY : e.clientY
-    this.setDragPos(x1, y1, x2, y2)
+    this.setState({
+      zone: this.setDragPos(x1, y1, x2, y2),
+      trigger: (y2 < this.state.boundary.top ||
+      y2 > this.state.boundary.bottom ||
+      x2 < this.state.boundary.left   ||
+      x2 > this.state.boundary.right)
+    })
   }
 
   setDragPos(x1, y1, x2, y2){
@@ -81,6 +96,11 @@ class SwipeCard extends Component {
         transition: 'transform '+ this.props.smooth || 100 +'ms'
       }
     })
+    if (yDiff > 0) {
+      return angle < 0 ? ["top","right"] : ["top","left"]
+    } else if (yDiff < 0){
+      return angle > 0 ? ["bottom","right"] : ["bottom","left"]
+    }
   }
 
   render() {
@@ -120,7 +140,7 @@ ReactDOM.render(
     right: 0,
     margin: 'auto'
   }}>
-    <SwipeCard threshold={20} />
+    <SwipeCard threshold={20} onLeft={() => {console.log('onLeft firing!')}} onRight={() => {console.log('onRight firing!')}}/>
   </div>,
   document.querySelector('#container')
 )
