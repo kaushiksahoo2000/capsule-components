@@ -1,4 +1,3 @@
-//in progress
 import React, {Component} from 'react'
 import ReactDOM from 'react-dom'
 
@@ -103,7 +102,7 @@ class Reactor extends Component {
 }
 
 export default HoldToTrigger
-export default Reactor 
+export default Reactor
 
 /*-------- Testing --------*/
 
